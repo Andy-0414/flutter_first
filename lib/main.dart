@@ -7,6 +7,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: '무한 스크롤',
+      theme: ThemeData(
+        primaryColor: Colors.indigoAccent
+      ),
       home: RandomWords(), // 액티비티 불러오기
     );
   }
@@ -21,11 +24,33 @@ class RandomWordsState extends State<RandomWords> {
   final _saved = new Set<int>();
   final _biggerFont = const TextStyle(fontSize: 18.0); // 폰트 사이즈 선언
 
+  void _pushSaved(){
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (BuildContext context){
+        final Iterable<ListTile> tiles = _saved.map((int pair){
+          return ListTile(title: Text(pair.toString(),style: _biggerFont,));
+        });
+
+        final List<Widget> divided =ListTile.divideTiles(context: context,tiles: tiles,).toList();
+
+        return Scaffold(
+          appBar: AppBar(
+            title: Text('Like List'),
+          ),
+          body: ListView(children: divided),
+        );
+      })
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Infinite Number List'), // 앱바 타이틀
+        actions: <Widget>[
+          new IconButton(icon:Icon(Icons.list), onPressed: _pushSaved)
+        ],
       ),
       body: _buildSuggestions(), // 리스트뷰 반환 함수
     );
