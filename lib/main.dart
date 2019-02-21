@@ -12,10 +12,47 @@ class MyApp extends StatelessWidget {
   }
 }
 
+class RandomWords extends StatefulWidget { // StatefulWidget (상태 변경 가능)
+  @override
+  RandomWordsState createState() => new RandomWordsState(); // 이 위젯이 생성시 RandomWordsState를 불러옴
+}
 class RandomWordsState extends State<RandomWords> {
   final _suggestions = <int>[]; // WordPair (단어) 배열
+  final _saved = new Set<int>();
   final _biggerFont = const TextStyle(fontSize: 18.0); // 폰트 사이즈 선언
 
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Infinite Number List'), // 앱바 타이틀
+      ),
+      body: _buildSuggestions(), // 리스트뷰 반환 함수
+    );
+  }
+  Widget _buildRow(int pair) { // 리스트 타일 생성 함수
+  final bool alreadySaved = _saved.contains(pair);
+    return ListTile(
+      title: Text( // 타이틀
+        pair.toString(),
+        style: _biggerFont,
+      ),
+      trailing: new Icon(   // Add the lines from here... 
+        alreadySaved ? Icons.favorite : Icons.favorite_border,
+        color: alreadySaved ? Colors.red : null,
+      ),
+      onTap: (){
+        setState(() {
+          if(alreadySaved){
+            _saved.remove(pair);
+          }
+          else{
+            _saved.add(pair);
+          }
+        });
+      },
+    );
+  }
   Widget _buildSuggestions() {
     return ListView.builder(
         padding: const EdgeInsets.all(16.0), // 패딩
@@ -28,25 +65,4 @@ class RandomWordsState extends State<RandomWords> {
           return _buildRow(_suggestions[index]); // 리스트 타일 생성
         });
   }
-  Widget _buildRow(int pair) { // 리스트 타일 생성 함수
-    return ListTile(
-      title: Text( // 타이틀
-        pair.toString(),
-        style: _biggerFont,
-      ),
-    );
-  }
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Infinite Number List'), // 앱바 타이틀
-      ),
-      body: _buildSuggestions(), // 리스트뷰 반환 함수
-    );
-  }
-}
-class RandomWords extends StatefulWidget { // StatefulWidget (상태 변경 가능)
-  @override
-  RandomWordsState createState() => new RandomWordsState(); // 이 위젯이 생성시 RandomWordsState를 불러옴
 }
